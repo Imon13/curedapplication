@@ -31,7 +31,7 @@ class CuredApplicaton extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
 
             ),
-            backgroundColor: Colors.purpleAccent,
+            backgroundColor: Colors.deepPurple,
             foregroundColor: Colors.white,
 
           ),

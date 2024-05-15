@@ -30,6 +30,7 @@ class _AddproductSceenState extends State<AddproductSceen> {
                     TextFormField(
                       controller: _nameTEcontroller,
                       keyboardType: TextInputType.text,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
 
                       decoration: InputDecoration(
                        hintText: 'Name',
@@ -50,6 +51,7 @@ class _AddproductSceenState extends State<AddproductSceen> {
                     TextFormField(
                       controller: _unitPriceTEcontrolller,
                       keyboardType: TextInputType.number,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
 
                       decoration: InputDecoration(
                         hintText: 'Unit_Price',
@@ -71,6 +73,7 @@ class _AddproductSceenState extends State<AddproductSceen> {
                     TextFormField(
                       controller: _quantityTEcontroller,
                       keyboardType: TextInputType.number,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
 
                       decoration: InputDecoration(
                         hintText: 'Quantity',
@@ -92,6 +95,7 @@ class _AddproductSceenState extends State<AddproductSceen> {
                     TextFormField(
                       controller: _totalpriceTEcontroller,
                       keyboardType: TextInputType.number,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
 
                       decoration: InputDecoration(
                         hintText: 'Total_price',
@@ -112,6 +116,7 @@ class _AddproductSceenState extends State<AddproductSceen> {
 
                     TextFormField(
                       controller: _imageTEController,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
 
                       decoration: InputDecoration(
                         hintText: 'Images',
@@ -146,5 +151,17 @@ class _AddproductSceenState extends State<AddproductSceen> {
           )
      
     );
+
+
+  }
+  @override
+  void dispose() {
+    _imageTEController.dispose();
+    _nameTEcontroller.dispose();
+    _totalpriceTEcontroller.dispose();
+    _quantityTEcontroller.dispose();
+    _unitPriceTEcontrolller.dispose();
+    super.dispose();
   }
 }
+

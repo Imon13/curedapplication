@@ -18,6 +18,11 @@ class CuredApplicaton extends StatelessWidget {
           focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.purpleAccent)
           ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.red,
+            )
+          )
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(

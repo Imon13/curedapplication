@@ -1,4 +1,5 @@
 import 'package:curdcls1/add-product_sceen.dart';
+import 'package:curdcls1/update_product.dart';
 import 'package:flutter/material.dart';
 
 class ProductListSceen extends StatefulWidget {
@@ -14,80 +15,82 @@ class _ProductListSceenState extends State<ProductListSceen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Product List"),
-
       ),
-      body:
-      ListView.separated(
+      body: ListView.separated(
         itemCount: 5,
-          itemBuilder: (context,index){
-          return
-            ListTile(
-            title: Text("Product Name"),
-            subtitle:
-            Wrap(
-              spacing: 16,
-              children: [
-                Text("Unit Price:100"),
-                Text("Unit Qantitty:100"),
-                Text("Unit Price:1000"),
-              ],
-            ),
-
-            trailing:
-            Wrap(
-              spacing: 16,
-
-              children: [IconButton(onPressed: (){},
-                  icon: Icon(Icons.edit)),
-                IconButton(onPressed: (){}, icon: Icon(Icons.delete))
-              ],
-            ),
-
-            
-
-          );
-
-
-          },
-        // use - instand of contex and __ instad of index .because of cleaing code
-        separatorBuilder: (_,  __) {
+        itemBuilder: (context, index) {
+          return _buildProductItem(context);
+        },
+        separatorBuilder: (_, __) {
           return Divider();
-        },),
-      floatingActionButton:FloatingActionButton(
-          onPressed: (){
-            Navigator.push(context, MaterialPageRoute(
-                builder: (context)=>AddproductSceen()));
-          },child: const Icon(Icons.add),),
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => AddproductSceen()));
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  void _showDeleteAlert() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Delete Product"),
+          content: Text("Are you sure you want to delete this product?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                // Add delete logic here
+                Navigator.of(context).pop();
+              },
+              child: Text("Delete"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildProductItem(BuildContext context) {
+    return ListTile(
+      title: Text("Product Name"),
+      subtitle: Wrap(
+        spacing: 16,
+        children: [
+          Text("Unit Price: 100"),
+          Text("Unit Quantity: 100"),
+          Text("Total Price: 1000"),
+        ],
+      ),
+      trailing: Wrap(
+        spacing: 16,
+        children: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => UpproductSceen()));
+            },
+            icon: Icon(Icons.edit),
+          ),
+          IconButton(
+            onPressed: () {
+              _showDeleteAlert();
+            },
+            icon: Icon(Icons.delete),
+          ),
+        ],
+      ),
     );
   }
 }
-
- Widget _bulildProductItem(){
-  return
-  ListTile(
-    title: Text("Product Name"),
-    subtitle:
-    Wrap(
-      spacing: 16,
-      children: [
-        Text("Unit Price:100"),
-        Text("Unit Qantitty:100"),
-        Text("Unit Price:1000"),
-      ],
-    ),
-
-    trailing:
-    Wrap(
-      spacing: 16,
-
-      children: [IconButton(onPressed: (){},
-          icon: Icon(Icons.edit)),
-        IconButton(onPressed: (){}, icon: Icon(Icons.delete))
-      ],
-    ),
-
-
-
-  );
-}
-

@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:curdcls1/add-product_sceen.dart';
 import 'package:curdcls1/update_product.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class ProductListSceen extends StatefulWidget {
   const ProductListSceen({super.key});
@@ -10,20 +12,35 @@ class ProductListSceen extends StatefulWidget {
 }
 
 class _ProductListSceenState extends State<ProductListSceen> {
+  bool _getProductListinProgress = false;
+  List<product> productList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getProductList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Product List"),
       ),
-      body: ListView.separated(
-        itemCount: 5,
-        itemBuilder: (context, index) {
-          return _buildProductItem(context);
-        },
-        separatorBuilder: (_, __) {
-          return Divider();
-        },
+      body: Visibility(
+        visible: !_getProductListinProgress,
+        replacement: const Center(
+          child: CircularProgressIndicator(),
+        ),
+        child: ListView.separated(
+          itemCount: productList.length,
+          itemBuilder: (context, index) {
+            return _buildProductItem(context, productList[index]);
+          },
+          separatorBuilder: (_, __) {
+            return Divider();
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -33,6 +50,42 @@ class _ProductListSceenState extends State<ProductListSceen> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  Future<void> _getProductList() async {
+    setState(() {
+      _getProductListinProgress = true;
+    });
+
+    const String productListUrl = 'https://crud.teamrabbil.com/api/v1/ReadProduct';
+    Uri uri = Uri.parse(productListUrl);
+    Response response = await get(uri);
+    print(response.statusCode);
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      final decodedData = jsonDecode(response.body);
+      final jsonProductList = decodedData['data'];
+      for (Map<String, dynamic> p in jsonProductList) {
+        product pp = product(
+          id: p['_id'] ?? "",
+          productName: p['ProductName'] ?? '',
+          productCode: p['ProductCode'] ?? '',
+          productQuantity: p['Qty'] ?? '',
+          unitprice: p['UnitPrice'] ?? '',
+          image: p['img'] ?? '',
+          totalprice: p['TotalPrice'] ?? '',
+        );
+        productList.add(pp);
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to get! Try again")));
+    }
+
+    setState(() {
+      _getProductListinProgress = false;
+    });
   }
 
   void _showDeleteAlert() {
@@ -62,15 +115,15 @@ class _ProductListSceenState extends State<ProductListSceen> {
     );
   }
 
-  Widget _buildProductItem(BuildContext context) {
+  Widget _buildProductItem(BuildContext context, product p) {
     return ListTile(
-      title: Text("Product Name"),
+      title: Text(p.productName),
       subtitle: Wrap(
         spacing: 16,
         children: [
-          Text("Unit Price: 100"),
-          Text("Unit Quantity: 100"),
-          Text("Total Price: 1000"),
+          Text("Unit Price: ${p.unitprice}"),
+          Text("Unit Quantity: ${p.productQuantity}"),
+          Text("Total Price: ${p.totalprice}"),
         ],
       ),
       trailing: Wrap(
@@ -93,4 +146,24 @@ class _ProductListSceenState extends State<ProductListSceen> {
       ),
     );
   }
+}
+
+class product {
+  final String id;
+  final String productName;
+  final String productCode;
+  final String productQuantity;
+  final String unitprice;
+  final String image;
+  final String totalprice;
+
+  product({
+    required this.id,
+    required this.productName,
+    required this.productCode,
+    required this.productQuantity,
+    required this.unitprice,
+    required this.image,
+    required this.totalprice,
+  });
 }

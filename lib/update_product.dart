@@ -1,8 +1,13 @@
+import 'dart:convert';
+
+import 'package:curdcls1/product_sceen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class UpproductSceen extends StatefulWidget {
-  const UpproductSceen({super.key});
-
+  const UpproductSceen({super.key, required this.pp});
+  final product pp ;
   @override
   State<UpproductSceen> createState() => _UpproductSceenState();
 }
@@ -13,8 +18,20 @@ class _UpproductSceenState extends State<UpproductSceen> {
   final TextEditingController _totalpriceTEcontroller = TextEditingController();
   final TextEditingController _imageTEController = TextEditingController();
   final TextEditingController _unitPriceTEcontrolller = TextEditingController();
+  final TextEditingController _productCodeTEcontroller = TextEditingController();
+
   final GlobalKey<FormState> _fromkey = GlobalKey<FormState>();
+  bool _updateProductInProgress = false;
   @override
+  void initState() {
+
+    super.initState();
+    _nameTEcontroller.text = widget.pp.productName;
+    _imageTEController.text = widget.pp.image;
+    _quantityTEcontroller.text = widget.pp.productQuantity;
+    _totalpriceTEcontroller.text = widget.pp.totalprice;
+    _unitPriceTEcontrolller.text = widget.pp.unitprice;
+  }
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -35,6 +52,27 @@ class _UpproductSceenState extends State<UpproductSceen> {
                     decoration: InputDecoration(
                       hintText: 'Name',
                       labelText: 'Name',
+
+
+                    ),
+                    validator: (String ? value){
+                      if(value == null || value.trim().isEmpty){
+                        return 'Write your product Name';
+                      }
+                      return null;
+                    },
+
+
+                  ),
+                  const SizedBox(height: 16,),
+                  TextFormField(
+                    controller: _productCodeTEcontroller,
+                    keyboardType: TextInputType.text,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+
+                    decoration: InputDecoration(
+                      hintText: 'Productcode',
+                      labelText: 'Productcode',
 
 
                     ),
@@ -134,14 +172,20 @@ class _UpproductSceenState extends State<UpproductSceen> {
 
                   ),
                   const SizedBox(height: 16,),
-                  ElevatedButton(
+                  Visibility(
+                    visible: _updateProductInProgress==false,
+                    replacement: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                    child: ElevatedButton(
 
-                      onPressed: (){
-                        if(_fromkey.currentState!.validate()){
-
-                        };
-                      },
-                      child: const Text("Update"))
+                        onPressed: (){
+                          if(_fromkey.currentState!.validate()){
+                                _updateProduct();
+                          };
+                        },
+                        child: const Text("Update")),
+                  )
 
                 ],
               ),
@@ -154,6 +198,39 @@ class _UpproductSceenState extends State<UpproductSceen> {
 
 
   }
+  Future<void> _updateProduct () async{
+    _updateProductInProgress= true;
+    setState(() {
+
+    });
+    Map<String, String> inputData = {
+      "Img": _imageTEController.text,
+      "ProductCode": _productCodeTEcontroller.text,
+      "ProductName": _nameTEcontroller.text,
+      "Qty": _quantityTEcontroller.text,
+      "TotalPrice": _totalpriceTEcontroller.text,
+      "UnitPrice": _unitPriceTEcontrolller.text
+    };
+    String _updateProductUrl = 'https://crud.teamrabbil.com/api/v1/UpdateProduct/${widget.pp.id}';
+    Uri uri = Uri.parse(_updateProductUrl);
+    Response response = await post(uri,
+        headers: {'content-type': 'application/json'},
+        body: jsonEncode(inputData));
+
+    print(response.statusCode);
+    print(response.body);
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Product has been updated')),
+      );
+      Navigator.pop(context, true);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Update product failed! Try again.')),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _imageTEController.dispose();

@@ -27,19 +27,23 @@ class _ProductListSceenState extends State<ProductListSceen> {
       appBar: AppBar(
         title: const Text("Product List"),
       ),
-      body: Visibility(
-        visible: !_getProductListinProgress,
-        replacement: const Center(
-          child: CircularProgressIndicator(),
-        ),
-        child: ListView.separated(
-          itemCount: productList.length,
-          itemBuilder: (context, index) {
-            return _buildProductItem(context, productList[index]);
-          },
-          separatorBuilder: (_, __) {
-            return Divider();
-          },
+      body:
+      RefreshIndicator(
+        onRefresh: _getProductList,
+        child: Visibility(
+          visible: !_getProductListinProgress,
+          replacement: const Center(
+            child: CircularProgressIndicator(),
+          ),
+          child: ListView.separated(
+            itemCount: productList.length,
+            itemBuilder: (context, index) {
+              return _buildProductItem(context, productList[index]);
+            },
+            separatorBuilder: (_, __) {
+              return Divider();
+            },
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -69,12 +73,12 @@ class _ProductListSceenState extends State<ProductListSceen> {
       for (Map<String, dynamic> p in jsonProductList) {
         product pp = product(
           id: p['_id'] ?? "",
-          productName: p['ProductName'] ?? '',
-          productCode: p['ProductCode'] ?? '',
-          productQuantity: p['Qty'] ?? '',
-          unitprice: p['UnitPrice'] ?? '',
-          image: p['img'] ?? '',
-          totalprice: p['TotalPrice'] ?? '',
+          productName: p['ProductName'] ?? 'unkown',
+          productCode: p['ProductCode'] ?? 'unkown',
+          productQuantity: p['Qty'] ?? 'unkown',
+          unitprice: p['UnitPrice'] ?? 'unkown',
+          image: p['img'] ?? 'unkown',
+          totalprice: p['TotalPrice'] ?? 'unkown',
         );
         productList.add(pp);
       }
@@ -130,11 +134,19 @@ class _ProductListSceenState extends State<ProductListSceen> {
         spacing: 16,
         children: [
           IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => UpproductSceen()));
-            },
             icon: Icon(Icons.edit),
+            onPressed: () async  {
+            final result = await  Navigator.push(
+                  context, MaterialPageRoute
+              (builder: (context) => UpproductSceen(pp: p,))
+
+            );
+            if(result == true){
+              _getProductList();
+            }
+            },
+
+
           ),
           IconButton(
             onPressed: () {
